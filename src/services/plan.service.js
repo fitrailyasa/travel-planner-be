@@ -70,7 +70,7 @@ const deletePlan = async (plantId) => {
 };
 
 const geminiApiRequest = async (itineraryData) => {
-  const genAI = new GoogleGenerativeAI('AIzaSyCfx3FjrvmLqx4G_AVf7tDlddpH9oSLmbk');
+  const genAI = new GoogleGenerativeAI(config.gemini.key);
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
   const prompt = `saya akan jalan jalan ke kota ${itineraryData.city} bersama ${itineraryData.travelCompanion} selama ${itineraryData.duration} hari dengan budget ${itineraryData.budget} berikan saya ide destinasi dari masing masing kategori ${itineraryData.travelTheme} dengan format string seperti dibawah ini,  your entire response/output is going to consist of a single string object {}, and you will NOT wrap it within JSON md markers.
