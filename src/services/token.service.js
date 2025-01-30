@@ -5,7 +5,7 @@ const config = require('../config/config');
 const userService = require('./user.service');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
-const prisma = require('../../prisma/client')
+const prisma = require('../../prisma/client');
 
 /**
  * Generate token
@@ -38,11 +38,11 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
   const tokenDoc = await prisma.token.create({
     data: {
       token,
-      userId: userId,
+      userId,
       expires: expires.toDate(),
       type,
       blacklisted,
-    }
+    },
   });
   return tokenDoc;
 };
@@ -56,7 +56,7 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
 const verifyToken = async (token, type) => {
   const payload = jwt.verify(token, config.jwt.secret);
   const tokenDoc = await prisma.token.findFirst({
-    where: { token, type, userId: payload.sub, blacklisted: false }
+    where: { token, type, userId: payload.sub, blacklisted: false },
   });
 
   if (!tokenDoc) {
@@ -100,6 +100,12 @@ const generateResetPasswordToken = async (email) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
   }
+  await prisma.token.deleteMany({
+    where: {
+      userId: user.id,
+      type: tokenTypes.RESET_PASSWORD,
+    },
+  });
   const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
   const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);
   await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);
@@ -112,6 +118,12 @@ const generateResetPasswordToken = async (email) => {
  * @returns {Promise<string>}
  */
 const generateVerifyEmailToken = async (user) => {
+  await prisma.token.deleteMany({
+    where: {
+      userId: user.id,
+      type: tokenTypes.VERIFY_EMAIL,
+    },
+  });
   const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
   const verifyEmailToken = generateToken(user.id, expires, tokenTypes.VERIFY_EMAIL);
   await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);
