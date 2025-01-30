@@ -9,6 +9,8 @@ const envVarsSchema = Joi.object()
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(3000),
     DATABASE_URL: Joi.string().required().description('DB url'),
+    GROK_KEY: Joi.string().required().description('Grok api key'),
+    GEMINI_KEY: Joi.string().required().description('Gemini Key'),
     JWT_SECRET: Joi.string().required().description('JWT secret key'),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
     JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh tokens expire'),
@@ -37,6 +39,12 @@ module.exports = {
   port: envVars.PORT,
   database: {
     url: envVars.DATABASE_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
+  },
+  gemini: {
+    key: envVars.GEMINI_KEY,
+  },
+  grok: {
+    key: envVars.GROK_KEY,
   },
   jwt: {
     secret: envVars.JWT_SECRET,
