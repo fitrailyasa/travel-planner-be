@@ -10,4 +10,6 @@ router.route('/').post(auth(), planController.createPlan).get(auth(), planContro
 
 router.route('/:planId').get(auth(), planController.getPlanById).delete(auth(), planController.deletePlan);
 
+router.route('/itinerary/:planId/').post(auth(), planController.createItinerary);
+
 module.exports = router;

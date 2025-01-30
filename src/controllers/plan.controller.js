@@ -43,9 +43,20 @@ const deletePlan = catchAsync(async (req, res) => {
   });
 });
 
+const createItinerary = catchAsync(async (req, res) => {
+  const plan = await planService.createItinerary(req.params.planId);
+
+  res.status(httpStatus.CREATED).send({
+    status: httpStatus.CREATED,
+    message: 'Create Itinerary Success',
+    data: plan,
+  });
+});
+
 module.exports = {
   createPlan,
   getAllPlan,
   getPlanById,
   deletePlan,
+  createItinerary,
 };
