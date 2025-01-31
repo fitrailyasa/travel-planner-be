@@ -50,7 +50,15 @@ const getPlanById = async (planId) => {
       id: planId,
     },
     include: {
-      travelDay: true,
+      travelDay: {
+        include: {
+          activities: {
+            include: {
+              destination: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -161,13 +169,11 @@ const createItinerary = async (planId) => {
   const categories = await prisma.category.findMany({
     where: { name: { in: categoryNames } },
   });
+  const travelDays = plan.travelDay;
 
   const categoryMap = Object.fromEntries(categories.map((c) => [c.name, c.id]));
-  const travelDays = await prisma.travelDay.findMany({
-    where: { travelPlanId: planId },
-  });
-
   const travelDayMap = Object.fromEntries(travelDays.map((td) => [td.day, td.id]));
+
   const destinations = [];
   const activities = [];
 
