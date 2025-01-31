@@ -17,8 +17,12 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.js",
     "prettier:fix": "prettier --write **/*.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint-staged": "lint-staged"
   },
+  "lint-staged": {
+  "*.js": "eslint --fix"
+},
   "keywords": [
     "node",
     "node.js",
@@ -78,7 +82,7 @@
     "faker": "^5.1.0",
     "husky": "^7.0.0",
     "jest": "^26.0.1",
-    "lint-staged": "^11.0.0",
+    "lint-staged": "^11.2.6",
     "node-mocks-http": "^1.8.0",
     "nodemon": "^2.0.0",
     "prettier": "^2.0.5",

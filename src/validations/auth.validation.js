@@ -7,7 +7,7 @@ const register = {
       .required()
       .email({ minDomainSegments: 2, tlds: { allow: ['com'] } }),
     password: Joi.string().required().custom(password),
-    username: Joi.string().required(),
+    name: Joi.string().required(),
     role: Joi.string().required(),
   }),
 };
