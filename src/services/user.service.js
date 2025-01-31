@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
-const prisma = require('../../prisma/client')
-const ApiError = require('../utils/ApiError');
 const bcrypt = require('bcryptjs');
+const prisma = require('../../prisma/client');
+const ApiError = require('../utils/ApiError');
 
 /**
  * Create a user
@@ -9,10 +9,13 @@ const bcrypt = require('bcryptjs');
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  userBody.password = bcrypt.hashSync(userBody.password, 8);
+  const hashPassword = bcrypt.hashSync(userBody.password, 8);
 
   return prisma.user.create({
-    data: userBody
+    data: {
+      ...userBody,
+      password: hashPassword,
+    },
   });
 };
 
@@ -20,9 +23,48 @@ const createUser = async (userBody) => {
  * Query for users
  * @returns {Promise<QueryResult>}
  */
-const queryUsers = async (filter, options) => {
-  const users = await prisma.user.findMany();
-  return users;
+const queryUsers = async (options) => {
+  const { page = 1, limit = 5, search = '', role, sortBy } = options;
+
+  const skip = (page - 1) * limit;
+
+  const whereCondition = {
+    OR: [
+      {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      {
+        email: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    ],
+    ...(role && { role }), // Jika role diberikan, tambahkan ke filter
+  };
+
+  const users = await prisma.user.findMany({
+    skip,
+    take: limit,
+    where: whereCondition,
+    include: {
+      tokens: true,
+    },
+    orderBy: sortBy ? { [sortBy]: 'asc' } : { name: 'asc' },
+  });
+
+  const totalData = await prisma.user.count({ where: whereCondition });
+  const totalPage = Math.ceil(totalData / limit);
+
+  return {
+    users,
+    page,
+    totalPage,
+    totalData,
+  };
 };
 
 /**
@@ -33,9 +75,9 @@ const queryUsers = async (filter, options) => {
 const getUserById = async (id) => {
   return prisma.user.findFirst({
     where: {
-      id: id
-    }
-  })
+      id,
+    },
+  });
 };
 
 /**
@@ -45,7 +87,7 @@ const getUserById = async (id) => {
  */
 const getUserByEmail = async (email) => {
   return prisma.user.findUnique({
-    where: { email }
+    where: { email },
   });
 };
 
@@ -60,16 +102,19 @@ const updateUserById = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  if (updateBody.email) {
+    const isEmailTaken = await getUserByEmail(updateBody.email);
+    if (isEmailTaken) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken!');
+    }
   }
-  
+
   const updateUser = await prisma.user.update({
     where: {
       id: userId,
     },
-    data: updateBody
-  })
+    data: updateBody,
+  });
 
   return updateUser;
 };
@@ -87,9 +132,9 @@ const deleteUserById = async (userId) => {
 
   const deleteUsers = await prisma.user.deleteMany({
     where: {
-      id: userId
+      id: userId,
     },
-  })
+  });
 
   return deleteUsers;
 };

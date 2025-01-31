@@ -14,12 +14,21 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const getUsers = catchAsync(async (req, res) => {
-  const result = await userService.queryUsers();
+  const options = {
+    page: parseInt(req.query.page, 10) || 1,
+    limit: parseInt(req.query.limit, 10) || 5,
+    sortBy: req.query.sortBy || 'name',
+    name: req.query.name || '',
+    role: req.query.role || '',
+  };
+  const result = await userService.queryUsers(options);
 
   res.status(httpStatus.OK).send({
     status: httpStatus.OK,
     message: 'Get Users Success',
-    data: result,
+    data: result.users,
+    totalData: result.totalData,
+    totalPage: result.totalPage,
   });
 });
 
