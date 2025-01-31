@@ -75,7 +75,7 @@ const queryUsers = async (options) => {
 const getUserById = async (id) => {
   return prisma.user.findFirst({
     where: {
-      id,
+      id: id,
     },
   });
 };
