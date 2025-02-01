@@ -44,7 +44,7 @@ module.exports = {
     key: envVars.GEMINI_KEY,
   },
   groq: {
-    key: envVars.GROK_KEY,
+    key: envVars.GROQ_KEY,
   },
   jwt: {
     secret: envVars.JWT_SECRET,

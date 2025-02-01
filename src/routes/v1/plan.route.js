@@ -16,7 +16,7 @@ router
   .get(auth(), validate(planValidation.getDeletePlan), planController.getPlanById)
   .delete(auth(), validate(planValidation.getDeletePlan), planController.deletePlan);
 
-router.route('/:planId/itinenary').post(auth(), validate(planValidation.getDeletePlan), planController.createItinerary);
+router.route('/:planId/itinerary').post(auth(), validate(planValidation.getDeletePlan), planController.createItinerary);
 
 router
   .route('/destination')
