@@ -224,7 +224,9 @@ const createItinerary = async (planId) => {
     destinationId: destinationMap[a.destinationId.replace('temp-', '')],
   }));
 
-  return await prisma.activity.createMany({ data: finalActivities });
+  await prisma.activity.createMany({ data: finalActivities });
+
+  return data;
   // for (const key in data) {
   //   for (const destinations of data[key]) {
   //     const { nama_tempat, deskripsi, alamat, kategori } = destinations;
