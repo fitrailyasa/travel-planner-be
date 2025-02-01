@@ -9,7 +9,7 @@ const envVarsSchema = Joi.object()
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(3000),
     DATABASE_URL: Joi.string().required().description('DB url'),
-    GROK_KEY: Joi.string().required().description('Grok api key'),
+    GROQ_KEY: Joi.string().required().description('Groq api key'),
     GEMINI_KEY: Joi.string().required().description('Gemini Key'),
     JWT_SECRET: Joi.string().required().description('JWT secret key'),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
@@ -43,7 +43,7 @@ module.exports = {
   gemini: {
     key: envVars.GEMINI_KEY,
   },
-  grok: {
+  groq: {
     key: envVars.GROK_KEY,
   },
   jwt: {
