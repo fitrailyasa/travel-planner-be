@@ -117,7 +117,7 @@ const geminiApiRequest = async (itineraryData) => {
 
 const grokApiRequest = async (itineraryData) => {
   const groq = new Groq({
-    apiKey: config.grok.key,
+    apiKey: config.groq.key,
   });
   const prompt = `berikan saya itenerary untuk ke kota ${itineraryData.city} bersama ${itineraryData.travelCompanion} selama ${itineraryData.duration} hari dengan budget ${itineraryData.budget} berikan saya ide destinasi dari masing masing kategori ${itineraryData.travelTheme} yang memungkinkan untuk dilakukan pada masing-masing hari, tanpa kegiatan yang bertabrakan atau tidak masuk akal, misalnya tidak ada kegiatan seperti ke pantai dan waterboom di hari yang sama. beri saya itenerary tempat yang bisa dikunjungsi berurutan dari tempat 1 ke tempat selanjutnya misal di day 1 ke tempat a lanjut tempat b makan di tempat c. kirim dengan format string seperti dibawah ini,  your entire response/output is going to consist of a single string object {}, and you will NOT wrap it within JSON md markers.
   {
