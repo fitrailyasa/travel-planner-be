@@ -8,13 +8,21 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(validate(destinationValidation.createDestination), destinationController.createDestination)
-  .get(destinationController.getAllDestination);
+  .post(auth(), validate(destinationValidation.createDestination), destinationController.createDestination)
+  .get(auth(), destinationController.getAllDestination);
 
 router
   .route('/:destinationId')
-  .get(validate(destinationValidation.getDeleteDestinationById), destinationController.getDestinationById)
-  .patch(validate(destinationValidation.updateDestination), destinationController.updateDestination)
-  .delete(validate(destinationValidation.getDeleteDestinationById), destinationController.deleteDestination);
+  .get(auth(), validate(destinationValidation.getDeleteDestinationById), destinationController.getDestinationById)
+  .patch(
+    auth('manageDestination'),
+    validate(destinationValidation.updateDestination),
+    destinationController.updateDestination
+  )
+  .delete(
+    auth('manageDestination'),
+    validate(destinationValidation.getDeleteDestinationById),
+    destinationController.deleteDestination
+  );
 
 module.exports = router;
