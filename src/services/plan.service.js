@@ -10,6 +10,13 @@ const createPlan = async (body, userId) => {
   body.endDate = new Date(body.endDate);
   body.budget = Number(body.budget);
 
+  if (body.travelTheme) {
+    body.travelTheme = body.travelTheme
+      .split(/\s*\/\s*|\s+/)
+      .map((theme) => theme.charAt(0).toUpperCase() + theme.slice(1))
+      .join('/');
+  }
+
   const days = Math.ceil((body.endDate - body.startDate) / (1000 * 60 * 60 * 24)) + 1;
 
   const plan = await prisma.travelPlan.create({
@@ -259,10 +266,29 @@ const createItinerary = async (planId) => {
   // }
 };
 
+const addDestinationToPlan = async (body) => {
+  return await prisma.activity.create({
+    data: {
+      destinationId: body.destinationId,
+      travelDayId: body.travelDayId,
+    },
+  });
+};
+
+const deleteDestinationFromPlan = async (activityId) => {
+  return await prisma.activity.delete({
+    where: {
+      id: activityId,
+    },
+  });
+};
+
 module.exports = {
   createPlan,
   getAllPlan,
   getPlanById,
   deletePlan,
   createItinerary,
+  addDestinationToPlan,
+  deleteDestinationFromPlan,
 };
