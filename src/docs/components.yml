@@ -1,12 +1,3 @@
-openapi: 3.0.0
-info:
-  title: Travel-Planner API
-  version: 1.0.0
-  description: API for managing travel plans, destinations, and categories.
-servers:
-  - url: http://localhost:3001/v1
-    description: Local server
-
 tags:
   - name: Auth
     description: Endpoints for user authentication and registration
@@ -817,9 +808,3 @@ paths:
       responses:
         '200':
           description: Itinerary created successfully
-
-securitySchemes:
-  bearerAuth:
-    type: http
-    scheme: bearer
-    bearerFormat: JWT
