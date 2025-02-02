@@ -1,0 +1,221 @@
+### Variables
+@baseUrl = http://localhost:3001/v1
+@userId = 12345
+@categoryId = 67890
+@destinationId = 54321
+@planId = 98765
+@travelDayId = 11223
+@access_token = <access_token>
+@refresh_token = <refresh_token>
+@reset_token = <reset_token>
+@verify_token = <verify_token>
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "John Doe"
+}
+
+### Login a user
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+### Refresh auth tokens
+POST {{baseUrl}}/auth/refresh-tokens
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+### Forgot password
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+### Reset password
+POST {{baseUrl}}/auth/reset-password?token={{reset_token}}
+Content-Type: application/json
+
+{
+  "password": "newpassword123"
+}
+
+### Send verification email
+POST {{baseUrl}}/auth/send-verification-email
+Authorization: Bearer {{access_token}}
+
+### Verify email
+POST {{baseUrl}}/auth/verify-email?token={{verify_token}}
+
+### Create a new user
+POST {{baseUrl}}/users
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "password123",
+  "role": "user"
+}
+
+### Get all users
+GET {{baseUrl}}/users
+Authorization: Bearer {{access_token}}
+
+### Get a user by ID
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{access_token}}
+
+### Update a user
+PATCH {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Jane Doe Updated",
+  "email": "jane_updated@example.com",
+  "password": "newpassword123",
+  "role": "admin"
+}
+
+### Delete a user
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{access_token}}
+
+### Create a new category
+POST {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Beaches",
+  "imageUrl": "http://example.com/image.jpg"
+}
+
+### Get all categories
+GET {{baseUrl}}/categories
+Authorization: Bearer {{access_token}}
+
+### Get a category by ID
+GET {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{access_token}}
+
+### Update a category
+PATCH {{baseUrl}}/categories/{{categoryId}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "imageUrl": "http://example.com/new_image.jpg"
+}
+
+### Delete a category
+DELETE {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{access_token}}
+
+### Get destinations by category
+GET {{baseUrl}}/categories/{{categoryId}}/destinations
+Authorization: Bearer {{access_token}}
+
+### Create a new destination
+POST {{baseUrl}}/destinations
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "placeName": "Bali Beach",
+  "description": "A beautiful beach in Bali.",
+  "address": "Bali, Indonesia",
+  "categoryId": "{{categoryId}}"
+}
+
+### Get all destinations
+GET {{baseUrl}}/destinations
+Authorization: Bearer {{access_token}}
+
+### Get a destination by ID
+GET {{baseUrl}}/destinations/{{destinationId}}
+Authorization: Bearer {{access_token}}
+
+### Update a destination
+PATCH {{baseUrl}}/destinations/{{destinationId}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "placeName": "Updated Bali Beach",
+  "description": "An updated description of Bali Beach.",
+  "address": "Updated Bali, Indonesia"
+}
+
+### Delete a destination
+DELETE {{baseUrl}}/destinations/{{destinationId}}
+Authorization: Bearer {{access_token}}
+
+### Create a new plan
+POST {{baseUrl}}/plans
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Summer Vacation",
+  "city": "Bali",
+  "travelCompanion": "Family",
+  "budget": 2000,
+  "travelTheme": "Relaxation",
+  "startDate": "2023-07-01",
+  "endDate": "2023-07-10"
+}
+
+### Get all plans
+GET {{baseUrl}}/plans
+Authorization: Bearer {{access_token}}
+
+### Get a plan by ID
+GET {{baseUrl}}/plans/{{planId}}
+Authorization: Bearer {{access_token}}
+
+### Delete a plan
+DELETE {{baseUrl}}/plans/{{planId}}
+Authorization: Bearer {{access_token}}
+
+### Add a destination to a plan
+POST {{baseUrl}}/plans/destination
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "travelDayId": "{{travelDayId}}",
+  "destinationId": "{{destinationId}}"
+}
+
+### Delete a destination from a plan
+DELETE {{baseUrl}}/plans/destination/{{destinationId}}
+Authorization: Bearer {{access_token}}
+
+### Create an itinerary for a plan
+POST {{baseUrl}}/plans/{{planId}}/itinerary
+Authorization: Bearer {{access_token}}
