@@ -25,8 +25,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "email": "jane@example.com",
+  "password": "password"
 }
 
 ### Logout

@@ -261,7 +261,9 @@ paths:
                       type: string
                     name:
                       type: string
-                    imageUrl:
+                    email:
+                      type: string
+                    role:
                       type: string
 
   /users/{userId}:
@@ -808,3 +810,4 @@ paths:
       responses:
         '200':
           description: Itinerary created successfully
+
