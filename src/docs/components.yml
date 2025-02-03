@@ -357,7 +357,7 @@ paths:
       responses:
         '200':
           description: user deleted successfully
-  
+
   /categories:
     post:
       tags:
@@ -777,7 +777,7 @@ paths:
         '200':
           description: Destination added to plan successfully
 
-  /plans/destination/{destinationId}:
+  /plans/destination/{activityId}:
     delete:
       tags:
         - Plan
@@ -810,4 +810,3 @@ paths:
       responses:
         '200':
           description: Itinerary created successfully
-

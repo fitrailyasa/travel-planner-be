@@ -36,5 +36,5 @@ module.exports = {
   createPlan,
   getDeletePlan,
   addDestinationToPlan,
-  deleteDestinationFromPlan,
+  deleteDestinationFromPlan,    
 };
