@@ -24,39 +24,45 @@ const createUser = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (options) => {
-  const { page = 1, limit = 5, search = '', role, sortBy } = options;
+  const { page = 1, limit = 5, name = '', role, sortBy } = options;
 
   const skip = (page - 1) * limit;
 
   const whereCondition = {
-    OR: [
-      {
-        name: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      },
-      {
-        email: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      },
-    ],
-    ...(role && { role }), // Jika role diberikan, tambahkan ke filter
+    AND: [
+      name
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: name,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                email: {
+                  contains: name,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          }
+        : {}, // Jika name tidak ada, maka tidak menambahkan filter
+      role ? { role } : {}, // Jika role tidak ada, maka tidak menambahkan filter
+    ].filter((condition) => Object.keys(condition).length > 0), // Menghapus kondisi kosong
   };
 
   const users = await prisma.user.findMany({
     skip,
     take: limit,
-    where: whereCondition,
+    where: whereCondition.AND.length ? whereCondition : {}, // kalau filter dan option tidak ada tampilin semua
     include: {
       tokens: true,
     },
     orderBy: sortBy ? { [sortBy]: 'asc' } : { name: 'asc' },
   });
 
-  const totalData = await prisma.user.count({ where: whereCondition });
+  const totalData = await prisma.user.count({ where: whereCondition.AND.length ? whereCondition : {} });
   const totalPage = Math.ceil(totalData / limit);
 
   return {
