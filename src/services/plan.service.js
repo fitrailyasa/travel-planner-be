@@ -97,23 +97,7 @@ const geminiApiRequest = async (itineraryData) => {
     const genAI = new GoogleGenerativeAI(config.gemini.key);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const prompt = `berikan saya itenerary untuk ke kota ${itineraryData.city} bersama ${itineraryData.travelCompanion} selama ${itineraryData.duration} hari dengan budget ${itineraryData.budget} berikan saya ide destinasi dari masing masing kategori ${itineraryData.travelTheme}/kuliner yang memungkinkan untuk dilakukan pada masing-masing hari, tanpa kegiatan yang bertabrakan atau tidak masuk akal, misalnya tidak ada kegiatan seperti ke pantai dan waterboom di hari yang sama. beri saya itenerary tempat yang bisa dikunjungsi berurutan dari tempat 1 ke tempat selanjutnya misal di day 1 ke tempat a lanjut tempat b makan di tempat c dari paginya sampe malam. kirim dengan format string seperti dibawah ini,  your entire response/output is going to consist of a single string object {}, and you will NOT wrap it within JSON md markers.
-  {
-  "result": {
-    "day1": [
-      {
-        "nama_tempat": "string", bener bener nama tempat sesuai tempatnya namanya apa,
-        "deskripsi": "string", hal yang bisa dilakukan disini
-        "kategori": "kirim namanya sesuai salah satu antara ${itineraryData.travelTheme}/kuliner",
-        "alamat": "alamat tempat"
-      }
-    ],
-    dan seterusnya sampai day ${itineraryData.duration}
-  }
-}
-
-  kirim response dalam bahasa indonesia,
-  Jangan menambahkan penjelasan atau teks lain di luar format yang diminta.`;
+    const prompt = promptText(itineraryData);
 
     const result = await model.generateContent(prompt);
     const res = JSON.parse(result.response.text());
@@ -127,23 +111,7 @@ const grokApiRequest = async (itineraryData) => {
   const groq = new Groq({
     apiKey: config.groq.key,
   });
-  const prompt = `berikan saya itenerary untuk ke kota ${itineraryData.city} bersama ${itineraryData.travelCompanion} selama ${itineraryData.duration} hari dengan budget ${itineraryData.budget} berikan saya ide destinasi dari masing masing kategori ${itineraryData.travelTheme} yang memungkinkan untuk dilakukan pada masing-masing hari, tanpa kegiatan yang bertabrakan atau tidak masuk akal, misalnya tidak ada kegiatan seperti ke pantai dan waterboom di hari yang sama. beri saya itenerary tempat yang bisa dikunjungsi berurutan dari tempat 1 ke tempat selanjutnya misal di day 1 ke tempat a lanjut tempat b makan di tempat c dari paginya sampe malam. kirim dengan format string seperti dibawah ini,  your entire response/output is going to consist of a single string object {}, and you will NOT wrap it within JSON md markers.
-  {
-  "result": {
-    "day1": [
-      {
-        "nama_tempat": "string", bener bener nama tempat sesuai tempatnya namanya apa,
-        "deskripsi": "string", hal yang bisa dilakukan disini
-        "kategori": "kirim namanya sesuai salah satu antara ${itineraryData.travelTheme}/kuliner",
-        "alamat": "alamat tempat"
-      }
-    ],
-    dan seterusnya sampai day ${itineraryData.duration}
-  }
-}
-
-  kirim response dalam bahasa indonesia,
-  Jangan menambahkan penjelasan atau teks lain di luar format yang diminta.`;
+  const prompt = promptText(itineraryData);
 
   const result = await groq.chat.completions.create({
     messages: [
@@ -291,6 +259,26 @@ const deleteDestinationFromPlan = async (activityId) => {
       id: activityId,
     },
   });
+};
+
+const promptText = (itineraryData) => {
+  return `berikan saya itenerary untuk ke kota ${itineraryData.city} bersama ${itineraryData.travelCompanion} saya. dengan budget ${itineraryData.budget} berikan saya itinerary yang cukup selama ${itineraryData.duration} hari. berikan saya ide destinasi dari masing masing kategori ${itineraryData.travelTheme}/kuliner . destinasi perharinya harus diawali dengan makan pagi dan diakhiri dengan makan malam. aktivitasnya harus yang masuk akal untuk setiap harinya seperti tidak ada kegiatan yang bertabrakan, misalnya tidak menggabungkan kunjungan ke pantai dan waterboom pada hari yang sama. Saya juga ingin urutan tempat yang logis untuk dikunjungi, misalnya pada hari pertama: mengunjungi tempat A, dilanjutkan ke tempat B, lalu makan di tempat C. destinasi di 1 harinya jangan terlalu jauh jaraknya dan bisa dikunjungi dari pagi hingga malam. kirim dengan format string seperti dibawah ini,  your entire response/output is going to consist of a single string object {}, and you will NOT wrap it within JSON md markers.
+  {
+  "result": {
+    "day1": [
+      {
+        "nama_tempat": "string", bener bener nama tempat sesuai tempatnya namanya apa,
+        "deskripsi": "string", hal yang bisa dilakukan disini
+        "kategori": "kirim namanya sesuai salah satu antara ${itineraryData.travelTheme}/kuliner",
+        "alamat": "alamat tempat"
+      }
+    ],
+    dan seterusnya sampai day ${itineraryData.duration}
+  }
+}
+
+  kirim response dalam bahasa indonesia,
+  Jangan menambahkan penjelasan atau teks lain di luar format yang diminta.`;
 };
 
 module.exports = {
