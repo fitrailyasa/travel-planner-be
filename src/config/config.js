@@ -8,6 +8,7 @@ const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(3000),
+    APP_URL: Joi.string().required(),
     DATABASE_URL: Joi.string().required().description('DB url'),
     GROQ_KEY: Joi.string().required().description('Groq api key'),
     GEMINI_KEY: Joi.string().required().description('Gemini Key'),
@@ -52,6 +53,9 @@ module.exports = {
     refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
     resetPasswordExpirationMinutes: envVars.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
     verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
+  },
+  app: {
+    url: envVars.APP_URL,
   },
   email: {
     smtp: {
