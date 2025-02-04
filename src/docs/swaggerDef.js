@@ -9,7 +9,7 @@ const swaggerDef = {
   },
   servers: [
     {
-      url: `${config.app.url}`,
+      url: `${config.app.url}/v1`,
     },
   ],
   security: [
