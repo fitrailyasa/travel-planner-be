@@ -12,6 +12,7 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+const allowedOrigin = process.env.CORS_ORIGIN || '*';
 
 const app = express();
 
@@ -36,8 +37,11 @@ app.use(xss());
 app.use(compression());
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
+app.use(
+  cors({
+    origin: allowedOrigin,
+  })
+);
 
 // jwt authentication
 app.use(passport.initialize());
