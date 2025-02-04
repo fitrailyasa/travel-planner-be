@@ -1,0 +1,830 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  description: Comprehensive API documentation
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/v1
+    description: Travel Planner App
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: Auth
+    description: Endpoints for user authentication and registration
+  - name: User
+    description: Endpoints for managing travel users
+  - name: Category
+    description: Endpoints for managing travel categories
+  - name: Destination
+    description: Endpoints for managing travel destinations
+  - name: Plan
+    description: Endpoints for managing travel plans
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: User registered successfully
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tokens:
+                    type: object
+                    properties:
+                      access:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                      refresh:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+              example:
+                refreshToken: string
+      responses:
+        '204':
+          description: No content
+
+  /auth/refresh-tokens:
+    post:
+      tags:
+        - Auth
+      summary: Refresh auth tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+              example:
+                refreshToken: string
+      responses:
+        '200':
+          description: OK
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Forgot password
+      description: An email will be sent to reset password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+              example:
+                email: fake@example.com
+      responses:
+        '204':
+          description: No content
+
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset password
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          description: The reset password token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: At least one number and one letter
+              example:
+                password: password1
+      responses:
+        '204':
+          description: No content
+
+  /auth/send-verification-email:
+    post:
+      tags:
+        - Auth
+      summary: Send verification email
+      description: An email will be sent to verify email.
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: No content
+
+  /auth/verify-email:
+    post:
+      tags:
+        - Auth
+      summary: Verify email
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+          description: The verify email token
+      responses:
+        '204':
+          description: No content
+
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create a new user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                  description: must be unique
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: At least one number and one letter
+                role:
+                  type: string
+                  enum: [user, admin]
+              example:
+                name: fake name
+                email: fake@example.com
+                password: password1
+                role: user
+      responses:
+        '200':
+          description: User created successfully
+
+    get:
+      tags:
+        - User
+      summary: Get all users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+
+  /users/{userId}:
+    get:
+      tags:
+        - User
+      summary: Get a user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  password:
+                    type: string
+                  role:
+                    type: string
+
+    patch:
+      tags:
+        - User
+      summary: Update a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - role
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                  description: must be unique
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: At least one number and one letter
+                role:
+                  type: string
+                  enum: [user, admin]
+              example:
+                name: fake name
+                email: fake@example.com
+                password: password1
+                role: user
+      responses:
+        '200':
+          description: user updated successfully
+
+    delete:
+      tags:
+        - User
+      summary: Delete a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user deleted successfully
+
+  /categories:
+    post:
+      tags:
+        - Category
+      summary: Create a new category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                imageUrl:
+                  type: string
+      responses:
+        '200':
+          description: Category created successfully
+
+    get:
+      tags:
+        - Category
+      summary: Get all categories
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    imageUrl:
+                      type: string
+
+  /categories/{categoryId}:
+    get:
+      tags:
+        - Category
+      summary: Get a category by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  imageUrl:
+                    type: string
+
+    patch:
+      tags:
+        - Category
+      summary: Update a category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+      responses:
+        '200':
+          description: Category updated successfully
+
+    delete:
+      tags:
+        - Category
+      summary: Delete a category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted successfully
+
+  /categories/{categoryId}/destinations:
+    get:
+      tags:
+        - Category
+      summary: Get destinations by category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of destinations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    placeName:
+                      type: string
+                    description:
+                      type: string
+                    address:
+                      type: string
+
+  /destinations:
+    post:
+      tags:
+        - Destination
+      summary: Create a new destination
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                placeName:
+                  type: string
+                description:
+                  type: string
+                address:
+                  type: string
+                categoryId:
+                  type: string
+      responses:
+        '200':
+          description: Destination created successfully
+
+    get:
+      tags:
+        - Destination
+      summary: Get all destinations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of destinations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    placeName:
+                      type: string
+                    description:
+                      type: string
+                    address:
+                      type: string
+
+  /destinations/{destinationId}:
+    get:
+      tags:
+        - Destination
+      summary: Get a destination by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: destinationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Destination details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  placeName:
+                    type: string
+                  description:
+                    type: string
+                  address:
+                    type: string
+
+    patch:
+      tags:
+        - Destination
+      summary: Update a destination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: destinationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                placeName:
+                  type: string
+                description:
+                  type: string
+                address:
+                  type: string
+      responses:
+        '200':
+          description: Destination updated successfully
+
+    delete:
+      tags:
+        - Destination
+      summary: Delete a destination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: destinationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Destination deleted successfully
+
+  /plans:
+    post:
+      tags:
+        - Plan
+      summary: Create a new plan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                city:
+                  type: string
+                travelCompanion:
+                  type: string
+                budget:
+                  type: number
+                travelTheme:
+                  type: string
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Plan created successfully
+
+    get:
+      tags:
+        - Plan
+      summary: Get all plans
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    city:
+                      type: string
+                    travelCompanion:
+                      type: string
+                    budget:
+                      type: number
+                    travelTheme:
+                      type: string
+                    startDate:
+                      type: string
+                      format: date
+                    endDate:
+                      type: string
+                      format: date
+
+  /plans/{planId}:
+    get:
+      tags:
+        - Plan
+      summary: Get a plan by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  city:
+                    type: string
+                  travelCompanion:
+                    type: string
+                  budget:
+                    type: number
+                  travelTheme:
+                    type: string
+                  startDate:
+                    type: string
+                    format: date
+                  endDate:
+                    type: string
+                    format: date
+
+    delete:
+      tags:
+        - Plan
+      summary: Delete a plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan deleted successfully
+
+  /plans/destination:
+    post:
+      tags:
+        - Plan
+      summary: Add a destination to a plan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                travelDayId:
+                  type: string
+                destinationId:
+                  type: string
+      responses:
+        '200':
+          description: Destination added to plan successfully
+
+  /plans/destination/{activityId}:
+    delete:
+      tags:
+        - Plan
+      summary: Delete a destination from a plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: destinationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Destination deleted from plan successfully
+
+  /plans/{planId}/itinerary:
+    post:
+      tags:
+        - Plan
+      summary: Create an itinerary for a plan
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Itinerary created successfully

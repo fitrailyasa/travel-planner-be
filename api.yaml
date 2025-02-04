@@ -1,3 +1,21 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  description: Comprehensive API documentation
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/v1
+    description: Travel Planner App
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 tags:
   - name: Auth
     description: Endpoints for user authentication and registration

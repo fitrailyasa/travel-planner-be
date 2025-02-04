@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const compression = require('compression');
+const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
 const passport = require('passport');
 const httpStatus = require('http-status');
@@ -13,6 +14,7 @@ const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 const allowedOrigin = process.env.CORS_ORIGIN || '*';
+const yaml = require('yamljs');
 
 const app = express();
 
@@ -21,6 +23,8 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
+const swaggerDocument = yaml.load('./api.yaml');
+app.use('/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // set security HTTP headers
 app.use(helmet());
 
