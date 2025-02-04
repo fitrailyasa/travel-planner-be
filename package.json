@@ -75,7 +75,8 @@
     "uuid": "^11.0.5",
     "validator": "^13.0.0",
     "winston": "^3.2.1",
-    "xss-clean": "^0.1.1"
+    "xss-clean": "^0.1.1",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.4.0",
