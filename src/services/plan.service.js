@@ -58,6 +58,9 @@ const getPlanById = async (planId) => {
     },
     include: {
       travelDay: {
+        orderBy: {
+          day: 'asc',
+        },
         include: {
           activities: {
             include: {
@@ -76,10 +79,6 @@ const getPlanById = async (planId) => {
       },
     },
   });
-
-  if (!plan) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Plan not found');
-  }
 
   return plan;
 };
