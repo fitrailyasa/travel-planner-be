@@ -63,6 +63,9 @@ const getPlanById = async (planId) => {
         },
         include: {
           activities: {
+            orderBy: {
+              createdAt: 'asc',
+            },
             include: {
               destination: {
                 include: {
